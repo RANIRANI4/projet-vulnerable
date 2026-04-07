@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Core\Controller;
+use App\Repository\UserRepository;
 
 class AuthController extends Controller
 {
@@ -15,8 +16,8 @@ class AuthController extends Controller
      * */
     public function __construct()
     {
-        $username = 'formation';
-        $password = 'paris';
+        $username = 'rani';
+        $password = 'formation';
         $host = '127.0.0.1';
         $port = 3306;
         $dbname = 'php_poo';
@@ -48,18 +49,23 @@ class AuthController extends Controller
          *
          */
 
+        /**
+         * @info
+         * "' OR 1=1 -- ": la chaine suivante ajoute une condition qui est toujours vrai et commente la suite de la query.
+         * */
+
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $email = $_POST['email'];
             $password = $_POST['password'];
 
-            /**
-             * @info
-             * "' OR 1=1 -- ": la chaine suivante ajoute une condition qui est toujours vrai et commente la suite de la query.
-             * */
-            $query = "SELECT * FROM `user` WHERE email='$email' AND password='$password'";
-            $result = $this->conn->query($query);
+            $userRepository = new UserRepository();
+            $user = $userRepository->findByEmail($email);
 
-            if ($result && mysqli_num_rows($result) > 0) {
+            if(!$user) {
+                throw new \Exception("User not found");
+            }
+
+            if (password_verify($password, $user->getPassword())) {
                 if (session_status() === PHP_SESSION_NONE) {
                     session_start();
                 }
