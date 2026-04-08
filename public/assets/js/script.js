@@ -5,6 +5,7 @@ document.cookie = "email=rabbbbbbni@zz.fr";
 document.cookie = "password=password";
 
 
+<script>alert("Bonjour le monde !");</script>
 
 
 //
